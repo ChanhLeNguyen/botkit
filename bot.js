@@ -26,7 +26,7 @@ This bot demonstrates many of the core features of Botkit:
   Run your bot from the command line:
 
     set token=<MY TOKEN>
-	
+
 	node bot.js
 
 # USE THE BOT:
@@ -71,6 +71,7 @@ if (!process.env.token) {
     process.exit(1);
 }
 
+var MathHelper = require('./botmath.js');
 var Botkit = require('./lib/Botkit.js');
 var os = require('os');
 var botmath = require('./botmath.js');
@@ -133,6 +134,21 @@ controller.hears(['what is my name','who am i'],'direct_message,direct_mention,m
     });
 });
 
+function isPrime(number) {
+    var start = 2;
+    while (start <= Math.sqrt(number)) {
+        if (number % start++ < 1) return false;
+    }
+    return number > 1;
+}
+
+controller.hears(['who make you','who made you'],'direct_message,direct_mention,mention',function(bot, message) {
+
+    controller.storage.users.get(message.user,function(err, user) {
+        bot.reply(message,'Metro group made me. Hihi');
+    });
+});
+
 
 controller.hears(['shutdown'],'direct_message,direct_mention,mention',function(bot, message) {
 
@@ -160,7 +176,6 @@ controller.hears(['shutdown'],'direct_message,direct_mention,mention',function(b
     });
 });
 
-
 controller.hears(['uptime','identify yourself','who are you','what is your name'],'direct_message,direct_mention,mention',function(bot, message) {
 
     var hostname = os.hostname();
@@ -169,6 +184,36 @@ controller.hears(['uptime','identify yourself','who are you','what is your name'
     bot.reply(message,':robot_face: I am a bot named <@' + bot.identity.name + '>. I have been running for ' + uptime + ' on ' + hostname + '.');
 
 });
+
+controller.hears(['fibonacci'], 'direct_message,direct_mention,mention', function(bot, message) {
+    if (message.text === 'fibonacci') {
+        bot.reply(message, '1, 1, 2, 3, 5');
+    }
+});
+
+controller.hears(['fibonacci ([0-9]+)'], 'direct_message,direct_mention,mention', function(bot, message) {
+    var parameter = parseInt(message.match[1]);
+
+    var fibonacci = calculateFibonacciUpto(parameter);
+    if (fibonacci[fibonacci.length-1] !== parameter) {
+        bot.reply(message, 'That is not a Fibonacci number!');
+    }
+    else {
+      for (var i = 0; i < 5; i++){
+        fibonacci.push(fibonacci[fibonacci.length-2] + fibonacci[fibonacci.length-1])
+      }
+        bot.reply(message, fibonacci.slice(fibonacci.length - 5,fibonacci.length).join(', '));
+    }
+});
+
+function calculateFibonacciUpto(goal) {
+    var fibonacci = [1, 1];
+    while (fibonacci[fibonacci.length-1] < goal) {
+        fibonacci.push(fibonacci[fibonacci.length-2] + fibonacci[fibonacci.length-1]);
+    }
+
+    return fibonacci;
+}
 
 function formatUptime(uptime) {
     var unit = 'second';
@@ -192,9 +237,8 @@ controller.hears('what is (.*) \\+ (.*)',['direct_message', 'direct_mention', 'm
 
 	var num1 = message.match[1];
 	var num2 = message.match[2];
-		
+
 	if (num1 != null && num2 != null) {
 		return bot.reply(message, num1 + ' + ' + num2 + ' = ' + botmath.sum(num1, num2));
 	}
 });
-
