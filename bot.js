@@ -187,23 +187,14 @@ controller.hears(['uptime','identify yourself','who are you','what is your name'
 
 controller.hears(['fibonacci'], 'direct_message,direct_mention,mention', function(bot, message) {
     if (message.text === 'fibonacci') {
-        bot.reply(message, '1, 1, 2, 3, 5');
+        bot.reply(message, botmath.fibonacciNum);
     }
 });
 
 controller.hears(['fibonacci ([0-9]+)'], 'direct_message,direct_mention,mention', function(bot, message) {
     var parameter = parseInt(message.match[1]);
 
-    var fibonacci = calculateFibonacciUpto(parameter);
-    if (fibonacci[fibonacci.length-1] !== parameter) {
-        bot.reply(message, 'That is not a Fibonacci number!');
-    }
-    else {
-      for (var i = 0; i < 5; i++){
-        fibonacci.push(fibonacci[fibonacci.length-2] + fibonacci[fibonacci.length-1])
-      }
-        bot.reply(message, fibonacci.slice(fibonacci.length - 5,fibonacci.length).join(', '));
-    }
+    bot.reply(message, botmath.fibonacci(parameter));
 });
 
 function calculateFibonacciUpto(goal) {
@@ -214,6 +205,19 @@ function calculateFibonacciUpto(goal) {
 
     return fibonacci;
 }
+
+controller.hears('prime',['direct_message', 'direct_mention', 'mention'],function(bot,message) {
+    if (message.text === "prime") {
+        return bot.reply(message, '2, 3, 5, 7, 11, 13, 17, 19, 23, 29');
+    }
+});
+
+controller.hears('prime (.*)',['direct_message', 'direct_mention', 'mention'],function(bot,message) {
+
+    var parameter = parseInt(message.match[1]);
+
+    return bot.reply(message, botmath.prime(parameter));
+});
 
 function formatUptime(uptime) {
     var unit = 'second';
