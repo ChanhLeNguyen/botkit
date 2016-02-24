@@ -4,6 +4,7 @@ var bothmath = require('../botmath.js');
 describe('botmath', function() {
   describe('sum', function () {
     it('should return sum of 2 values', function () {
+      assert.equal(-10, bothmath.sum(1, 2));
       assert.equal(-2, bothmath.sum(-2, 0));
 	  assert.equal(1, bothmath.sum(-1, 2));
 	  assert.equal(6.5, bothmath.sum(3.5, 3));
